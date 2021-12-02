@@ -20,19 +20,23 @@ fn num_increases(input: &str) -> std::io::Result<usize> {
     Ok(num_increases)
 }
 
-fn windowed<T>(it: impl Iterator<Item = T>) -> impl Iterator<Item = (T, T, T)>
+fn windowed<Iter, T, const L: usize>(it: Iter) -> impl Iterator<Item = [T; L]>
 where
-    T: Copy + std::fmt::Debug,
+    Iter: Iterator<Item = T>,
+    T: Copy + std::fmt::Debug + Default,
 {
-    let window_size = 3;
-    let dequeue = std::collections::VecDeque::with_capacity(window_size + 1);
+    let dequeue = std::collections::VecDeque::with_capacity(L + 1);
     it.scan(dequeue, move |window, item| {
         window.push_back(item);
-        while window.len() > window_size {
+        while window.len() > L {
             window.pop_front();
         }
-        if window.len() == window_size {
-            Some(Some((window[0], window[1], window[2])))
+        if window.len() == L {
+            let mut slice: [T; L] = [T::default(); L];
+            for i in 0..L {
+                slice[i] = window[i];
+            }
+            Some(Some(slice))
         } else {
             Some(None)
         }
@@ -44,8 +48,8 @@ fn num_window_increases(input: &str) -> std::io::Result<usize> {
     let mut num_increases = 0;
     let mut prev: Option<i64> = None;
     let nums = parse(input)?;
-    for (a, b, c) in windowed(nums.iter().copied()) {
-        let sum = a + b + c;
+    for window in windowed::<_, _, 3>(nums.iter().copied()) {
+        let sum = window.iter().sum();
         if let Some(prev) = prev {
             if sum > prev {
                 num_increases += 1;
