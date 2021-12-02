@@ -20,27 +20,28 @@ fn num_increases(input: &str) -> std::io::Result<usize> {
     Ok(num_increases)
 }
 
-fn windowed<Iter, T, const L: usize>(it: Iter) -> impl Iterator<Item = [T; L]>
+fn unordered_windows<Iter, T, const L: usize>(it: Iter) -> impl Iterator<Item = [T; L]>
 where
     Iter: Iterator<Item = T>,
     T: Copy + std::fmt::Debug + Default,
 {
-    let dequeue = std::collections::VecDeque::with_capacity(L + 1);
-    it.scan(dequeue, move |window, item| {
-        window.push_back(item);
-        while window.len() > L {
-            window.pop_front();
-        }
-        if window.len() == L {
-            let mut slice: [T; L] = [T::default(); L];
-            for i in 0..L {
-                slice[i] = window[i];
+    let buffer = [T::default(); L];
+    it.scan(
+        (buffer, 0 as usize, false),
+        move |(buffer, idx, filled), item| {
+            buffer[*idx] = item;
+            *idx = *idx + 1;
+            if *idx == L {
+                *filled = true;
+                *idx = 0;
             }
-            Some(Some(slice))
-        } else {
-            Some(None)
-        }
-    })
+            if *filled {
+                Some(Some(buffer.clone()))
+            } else {
+                Some(None)
+            }
+        },
+    )
     .filter_map(|x| x)
 }
 
@@ -48,7 +49,7 @@ fn num_window_increases(input: &str) -> std::io::Result<usize> {
     let mut num_increases = 0;
     let mut prev: Option<i64> = None;
     let nums = parse(input)?;
-    for window in windowed::<_, _, 3>(nums.iter().copied()) {
+    for window in unordered_windows::<_, _, 3>(nums.iter().copied()) {
         let sum = window.iter().sum();
         if let Some(prev) = prev {
             if sum > prev {
