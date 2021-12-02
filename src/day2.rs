@@ -1,12 +1,13 @@
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 enum Direction {
     Forward,
     Down,
     Up,
 }
 
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 struct Command {
     direction: Direction,
     steps: i64,
@@ -37,16 +38,28 @@ impl FromStr for Command {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
-struct Location {
+fn take_commands<Loc>(commands: &str) -> Result<SimpleLocation, String>
+where
+    Loc: Location + Into<SimpleLocation> + Default,
+{
+    let mut location = Loc::default();
+    for command in commands.lines() {
+        location.take_command(Command::from_str(command)?);
+    }
+    Ok(location.into())
+}
+
+trait Location {
+    fn take_command(&mut self, command: Command);
+}
+
+#[derive(Debug, PartialEq, Eq, Default)]
+struct SimpleLocation {
     depth: i64,
     x: i64,
 }
-impl Location {
-    fn new() -> Self {
-        Location { depth: 0, x: 0 }
-    }
-    fn take_command(&mut self, command: &Command) {
+impl Location for SimpleLocation {
+    fn take_command(&mut self, command: Command) {
         match command.direction {
             Direction::Forward => self.x += command.steps,
             Direction::Down => self.depth += command.steps,
@@ -55,17 +68,8 @@ impl Location {
     }
 }
 
-fn take_commands(commands: &str) -> Result<Location, String> {
-    let mut location = Location::new();
-    for command in commands.lines() {
-        let command = Command::from_str(command)?;
-        location.take_command(&command);
-    }
-    Ok(location)
-}
-
 fn part_1(input: &str) -> Result<i64, String> {
-    let location = take_commands(input)?;
+    let location = take_commands::<SimpleLocation>(input)?;
     Ok(location.x.abs() * location.depth.abs())
 }
 
@@ -78,28 +82,23 @@ up 3
 down 8
 forward 2
 ";
-    assert_eq!(take_commands(input).unwrap(), Location { depth: 10, x: 15 });
+    assert_eq!(
+        take_commands::<SimpleLocation>(input).unwrap(),
+        SimpleLocation { depth: 10, x: 15 }
+    );
     assert_eq!(part_1(input).unwrap(), 150);
 
     assert_eq!(part_1(include_str!("./day2.txt")), Ok(1_561_344));
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Default)]
 struct TrickyLocation {
     depth: i64,
     x: i64,
     aim: i64,
 }
-impl TrickyLocation {
-    fn new() -> Self {
-        TrickyLocation {
-            depth: 0,
-            x: 0,
-            aim: 0,
-        }
-    }
-
-    fn take_command(&mut self, command: &Command) {
+impl Location for TrickyLocation {
+    fn take_command(&mut self, command: Command) {
         match command.direction {
             Direction::Down => self.aim += command.steps,
             Direction::Up => self.aim -= command.steps,
@@ -110,21 +109,17 @@ impl TrickyLocation {
         }
     }
 }
-
-fn take_commands_tricky(commands: &str) -> Result<Location, String> {
-    let mut location = TrickyLocation::new();
-    for command in commands.lines() {
-        let command = Command::from_str(command)?;
-        location.take_command(&command);
+impl Into<SimpleLocation> for TrickyLocation {
+    fn into(self) -> SimpleLocation {
+        SimpleLocation {
+            depth: self.depth,
+            x: self.x,
+        }
     }
-    Ok(Location {
-        depth: location.depth,
-        x: location.x,
-    })
 }
 
 fn part_2(input: &str) -> Result<i64, String> {
-    let location = take_commands_tricky(input)?;
+    let location = take_commands::<TrickyLocation>(input)?;
     Ok(location.x.abs() * location.depth.abs())
 }
 
@@ -138,8 +133,8 @@ down 8
 forward 2
 ";
     assert_eq!(
-        take_commands_tricky(input).unwrap(),
-        Location { depth: 60, x: 15 }
+        take_commands::<TrickyLocation>(input).unwrap(),
+        SimpleLocation { depth: 60, x: 15 }
     );
     assert_eq!(part_2(input).unwrap(), 900);
 
