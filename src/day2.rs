@@ -1,3 +1,4 @@
+use anyhow::{anyhow, Result};
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -14,31 +15,31 @@ struct Command {
 }
 
 impl FromStr for Command {
-    type Err = String;
+    type Err = anyhow::Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         // parse like "forward 10" or "down 20"
         let mut parts = s.split_whitespace();
         let direction = match parts.next().unwrap() {
             "forward" => Direction::Forward,
             "down" => Direction::Down,
             "up" => Direction::Up,
-            _ => return Err(format!("Invalid direction: {}", s)),
+            _ => return Err(anyhow!("invalid direction")),
         };
         let steps = parts
             .next()
-            .ok_or("Expected direction then number")?
+            .ok_or(anyhow!("Expected direction then number"))?
             .parse::<i64>()
-            .map_err(|e| format!("Invalid number: {}", e))?;
+            .map_err(|e| anyhow!("Invalid number: {}", e))?;
         if parts.next().is_some() {
-            return Err(format!("Too many parts: {}", s));
+            return Err(anyhow!("Too many parts: {}", s));
         }
 
         Ok(Command { direction, steps })
     }
 }
 
-fn take_commands<Loc>(commands: &str) -> Result<SimpleLocation, String>
+fn take_commands<Loc>(commands: &str) -> Result<SimpleLocation>
 where
     Loc: Location + Into<SimpleLocation> + Default,
 {
@@ -68,7 +69,7 @@ impl Location for SimpleLocation {
     }
 }
 
-fn part_1(input: &str) -> Result<i64, String> {
+fn part_1(input: &str) -> Result<i64> {
     let location = take_commands::<SimpleLocation>(input)?;
     Ok(location.x.abs() * location.depth.abs())
 }
@@ -88,7 +89,7 @@ forward 2
     );
     assert_eq!(part_1(input).unwrap(), 150);
 
-    assert_eq!(part_1(include_str!("./day2.txt")), Ok(1_561_344));
+    assert_eq!(part_1(include_str!("./day2.txt")).unwrap(), 1_561_344);
 }
 
 #[derive(Debug, PartialEq, Eq, Default)]
@@ -118,7 +119,7 @@ impl Into<SimpleLocation> for TrickyLocation {
     }
 }
 
-fn part_2(input: &str) -> Result<i64, String> {
+fn part_2(input: &str) -> Result<i64> {
     let location = take_commands::<TrickyLocation>(input)?;
     Ok(location.x.abs() * location.depth.abs())
 }
@@ -138,5 +139,5 @@ forward 2
     );
     assert_eq!(part_2(input).unwrap(), 900);
 
-    assert_eq!(part_2(include_str!("./day2.txt")), Ok(1_848_454_425));
+    assert_eq!(part_2(include_str!("./day2.txt")).unwrap(), 1_848_454_425);
 }
