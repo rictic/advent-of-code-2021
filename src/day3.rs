@@ -1,5 +1,3 @@
-use std::str::Lines;
-
 use anyhow::{anyhow, Result};
 
 fn extract_counts(input: &Vec<String>) -> Result<(Vec<usize>, usize)> {
@@ -171,5 +169,5 @@ fn test_part2() {
     assert_eq!(extract_oxygen_and_co2(input).unwrap(), (23, 10));
     assert_eq!(part_2(input).unwrap(), 230);
 
-    assert_eq!(part_2(include_str!("./day3.txt")).unwrap(), 0);
+    assert_eq!(part_2(include_str!("./day3.txt")).unwrap(), 3379326);
 }
