@@ -1,11 +1,11 @@
 use anyhow::{self, Context, Result};
 use std::{
-    collections::BTreeMap,
+    collections::HashMap,
     fmt::{Display, Formatter},
     str::FromStr,
 };
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 struct Point {
     x: i64,
     y: i64,
@@ -51,7 +51,7 @@ impl LineSegment {
 
 struct Board {
     // Counts of the number of times each point is touched by a line.
-    points: BTreeMap<Point, u64>,
+    points: HashMap<Point, u64>,
     // Bounds so we can efficiently draw the board
     min_x: i64,
     max_x: i64,
@@ -62,7 +62,7 @@ struct Board {
 impl Default for Board {
     fn default() -> Board {
         Board {
-            points: BTreeMap::new(),
+            points: HashMap::new(),
             min_x: 0,
             max_x: 0,
             min_y: 0,
