@@ -1,7 +1,9 @@
 use anyhow::{self, Context, Result};
-use rayon::{iter::ParallelIterator, str::ParallelString};
+use rayon::{
+    iter::{IntoParallelIterator, ParallelIterator},
+    str::ParallelString,
+};
 use std::{
-    collections::HashMap,
     fmt::{Display, Formatter},
     str::FromStr,
 };
@@ -52,35 +54,20 @@ impl LineSegment {
 
 struct Board {
     // Counts of the number of times each point is touched by a line.
-    points: HashMap<Point, u64>,
-    // Bounds so we can efficiently draw the board
-    min_x: i64,
-    max_x: i64,
-    min_y: i64,
-    max_y: i64,
-}
-
-impl Default for Board {
-    fn default() -> Board {
-        Board {
-            points: HashMap::new(),
-            min_x: 0,
-            max_x: 0,
-            min_y: 0,
-            max_y: 0,
-        }
-    }
+    points: Vec<u8>,
+    // Bounds so we can map points to indexes
+    bounds: Bounds,
 }
 
 impl Board {
-    fn add_line(&mut self, line: LineSegment) {
-        // update bounds
-        self.min_x = self.min_x.min(line.start.x.min(line.end.x));
-        self.max_x = self.max_x.max(line.start.x.max(line.end.x));
-        self.min_y = self.min_y.min(line.start.y.min(line.end.y));
-        self.max_y = self.max_y.max(line.start.y.max(line.end.y));
+    fn from_bounds(bounds: Bounds) -> Board {
+        Board {
+            points: vec![0; bounds.area()],
+            bounds,
+        }
+    }
 
-        // initially just supporting straight lines
+    fn add_line(&mut self, line: LineSegment) {
         // insert all points in the line
         let (mut x, mut y) = (line.start.x, line.start.y);
         let (mut dx, mut dy) = (line.end.x - line.start.x, line.end.y - line.start.y);
@@ -95,10 +82,8 @@ impl Board {
             dy = -1;
         }
         loop {
-            self.points
-                .entry(Point { x, y })
-                .and_modify(|count| *count += 1)
-                .or_insert(1);
+            self.points[self.bounds.index(x, y)] =
+                self.points[self.bounds.index(x, y)].saturating_add(1);
             if x == line.end.x && y == line.end.y {
                 break;
             }
@@ -108,24 +93,18 @@ impl Board {
     }
 
     fn combine(&mut self, other: Board) {
-        for (point, o_count) in other.points.into_iter() {
-            self.points
-                .entry(point)
-                .and_modify(|count| *count += o_count)
-                .or_insert(o_count);
+        for (mine, theirs) in self.points.iter_mut().zip(other.points.into_iter()) {
+            *mine = mine.saturating_add(theirs);
         }
-        self.min_x = self.min_x.min(other.min_x);
-        self.max_x = self.max_x.max(other.max_x);
-        self.min_y = self.min_y.min(other.min_y);
-        self.max_y = self.max_y.max(other.max_y);
     }
 }
 
 impl Display for Board {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        for y in self.min_y..=self.max_y {
-            for x in self.min_x..=self.max_x {
-                let count = *self.points.get(&Point { x, y }).unwrap_or(&0);
+        for y in self.bounds.min_y..=self.bounds.max_y {
+            for x in self.bounds.min_x..=self.bounds.max_x {
+                let index = self.bounds.index(x, y);
+                let count = self.points[index];
                 if count > 10 {
                     write!(f, "X")?;
                 } else if count > 0 {
@@ -140,32 +119,73 @@ impl Display for Board {
     }
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+struct Bounds {
+    min_x: i64,
+    max_x: i64,
+    min_y: i64,
+    max_y: i64,
+}
+
+impl Bounds {
+    fn area(&self) -> usize {
+        (self.max_x - self.min_x + 1) as usize * (self.max_y - self.min_y + 1) as usize
+    }
+
+    fn index(&self, x: i64, y: i64) -> usize {
+        (x - self.min_x) as usize * (self.max_y - self.min_y + 1) as usize
+            + (y - self.min_y) as usize
+    }
+}
+
+fn get_bounds(lines: &[LineSegment]) -> Bounds {
+    let mut bounds = Bounds {
+        min_x: 0,
+        max_x: 0,
+        min_y: 0,
+        max_y: 0,
+    };
+    for line in lines {
+        bounds.min_x = bounds.min_x.min(line.start.x.min(line.end.x));
+        bounds.max_x = bounds.max_x.max(line.start.x.max(line.end.x));
+        bounds.min_y = bounds.min_y.min(line.start.y.min(line.end.y));
+        bounds.max_y = bounds.max_y.max(line.start.y.max(line.end.y));
+    }
+    bounds
+}
+
 fn part_1(input: &str) -> Result<usize> {
-    let board = input
+    let line_segments = input
         .par_split('\n')
         // parse the line segments
         .map(|line| line.parse::<LineSegment>().context("Part 1 input"))
+        .collect::<Result<Vec<_>>>()?;
+
+    let bounds = get_bounds(&line_segments);
+
+    let board = line_segments
+        .into_par_iter()
         // group the segments into chunks and combine those chunks into boards
         .fold(
-            || anyhow::Ok(Board::default()),
+            || Board::from_bounds(bounds),
             |board, line| {
-                let (line, mut board) = (line?, board?);
+                let (line, mut board) = (line, board);
                 if line.is_straight() {
                     board.add_line(line);
                 }
-                Ok(board)
+                board
             },
         )
         // combine those boards down into one
         .reduce(
-            || Ok(Board::default()),
-            |l, r| {
-                let (mut l, r) = (l?, r?);
+            || Board::from_bounds(bounds),
+            |mut l, r| {
                 l.combine(r);
-                Ok(l)
+                l
             },
-        )?;
-    Ok(board.points.values().filter(|&count| *count > 1).count())
+        );
+    let count_at_least_two = board.points.into_par_iter().filter(|&i| i > 1).count();
+    Ok(count_at_least_two)
 }
 
 #[test]
@@ -187,29 +207,35 @@ fn test_part_1() {
 }
 
 fn part_2(input: &str) -> Result<usize> {
-    let board = input
+    let line_segments = input
         .par_split('\n')
         // parse the line segments
         .map(|line| line.parse::<LineSegment>().context("Part 2 input"))
+        .collect::<Result<Vec<_>>>()?;
+
+    let bounds = get_bounds(&line_segments);
+
+    let board = line_segments
+        .into_par_iter()
         // group the segments into chunks and combine those chunks into boards
         .fold(
-            || anyhow::Ok(Board::default()),
+            || Board::from_bounds(bounds),
             |board, line| {
-                let (line, mut board) = (line?, board?);
+                let (line, mut board) = (line, board);
                 board.add_line(line);
-                Ok(board)
+                board
             },
         )
         // combine those boards down into one
         .reduce(
-            || Ok(Board::default()),
-            |l, r| {
-                let (mut l, r) = (l?, r?);
+            || Board::from_bounds(bounds),
+            |mut l, r| {
                 l.combine(r);
-                Ok(l)
+                l
             },
-        )?;
-    Ok(board.points.values().filter(|&count| *count > 1).count())
+        );
+    let count_at_least_two = board.points.into_par_iter().filter(|&i| i > 1).count();
+    Ok(count_at_least_two)
 }
 
 #[test]
@@ -233,6 +259,5 @@ fn test_part_2() {
     // let mut big_input_seed = String::from(include_str!("./day5.txt"));
     // big_input_seed.push_str("\n");
     // let big_input = big_input_seed.repeat(10_000);
-    // println!("{}", big_input.len());
     // assert_eq!(part_2(&big_input.trim()).unwrap(), 168274);
 }
