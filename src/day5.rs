@@ -1,4 +1,5 @@
 use anyhow::{self, Context, Result};
+use rayon::{iter::ParallelIterator, str::ParallelString};
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},
@@ -105,6 +106,19 @@ impl Board {
             y += dy;
         }
     }
+
+    fn combine(&mut self, other: Board) {
+        for (point, o_count) in other.points.into_iter() {
+            self.points
+                .entry(point)
+                .and_modify(|count| *count += o_count)
+                .or_insert(o_count);
+        }
+        self.min_x = self.min_x.min(other.min_x);
+        self.max_x = self.max_x.max(other.max_x);
+        self.min_y = self.min_y.min(other.min_y);
+        self.max_y = self.max_y.max(other.max_y);
+    }
 }
 
 impl Display for Board {
@@ -127,17 +141,30 @@ impl Display for Board {
 }
 
 fn part_1(input: &str) -> Result<usize> {
-    let mut board = Board::default();
-    let lines = input
-        .lines()
+    let board = input
+        .par_split('\n')
+        // parse the line segments
         .map(|line| line.parse::<LineSegment>().context("Part 1 input"))
-        .collect::<Result<Vec<LineSegment>>>()?;
-    for line in lines {
-        if !line.is_straight() {
-            continue;
-        }
-        board.add_line(line);
-    }
+        // group the segments into chunks and combine those chunks into boards
+        .fold(
+            || anyhow::Ok(Board::default()),
+            |board, line| {
+                let (line, mut board) = (line?, board?);
+                if line.is_straight() {
+                    board.add_line(line);
+                }
+                Ok(board)
+            },
+        )
+        // combine those boards down into one
+        .reduce(
+            || Ok(Board::default()),
+            |l, r| {
+                let (mut l, r) = (l?, r?);
+                l.combine(r);
+                Ok(l)
+            },
+        )?;
     Ok(board.points.values().filter(|&count| *count > 1).count())
 }
 
@@ -160,14 +187,28 @@ fn test_part_1() {
 }
 
 fn part_2(input: &str) -> Result<usize> {
-    let mut board = Board::default();
-    let lines = input
-        .lines()
+    let board = input
+        .par_split('\n')
+        // parse the line segments
         .map(|line| line.parse::<LineSegment>().context("Part 2 input"))
-        .collect::<Result<Vec<LineSegment>>>()?;
-    for line in lines {
-        board.add_line(line);
-    }
+        // group the segments into chunks and combine those chunks into boards
+        .fold(
+            || anyhow::Ok(Board::default()),
+            |board, line| {
+                let (line, mut board) = (line?, board?);
+                board.add_line(line);
+                Ok(board)
+            },
+        )
+        // combine those boards down into one
+        .reduce(
+            || Ok(Board::default()),
+            |l, r| {
+                let (mut l, r) = (l?, r?);
+                l.combine(r);
+                Ok(l)
+            },
+        )?;
     Ok(board.points.values().filter(|&count| *count > 1).count())
 }
 
@@ -187,4 +228,11 @@ fn test_part_2() {
         .trim();
     assert_eq!(part_2(input).unwrap(), 12);
     assert_eq!(part_2(include_str!("./day5.txt")).unwrap(), 20_196);
+
+    // a huge input, such that it's actually faster to do it in parallel
+    // let mut big_input_seed = String::from(include_str!("./day5.txt"));
+    // big_input_seed.push_str("\n");
+    // let big_input = big_input_seed.repeat(10_000);
+    // println!("{}", big_input.len());
+    // assert_eq!(part_2(&big_input.trim()).unwrap(), 168274);
 }
