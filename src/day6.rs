@@ -7,15 +7,14 @@ fn count_lanternfish(input: &str, num_days: u64) -> Result<BigUint> {
     let init: [BigUint; 9] = Default::default();
     let mut num_fish_each_day_until_spawn: VecDeque<BigUint> = VecDeque::from(init);
     for days in input.split(',') {
-        let days = days.parse::<usize>().context("parsing input number")?;
-        if days > num_fish_each_day_until_spawn.len() {
+        let days = days.parse().context("parsing input number")?;
+        if days > 6 {
             anyhow::bail!(
-                "input number is too large! Expected at most {} but got {}",
-                num_fish_each_day_until_spawn.len(),
+                "input number is too large! Expected at most 6 but got {}",
                 days
             );
         }
-        num_fish_each_day_until_spawn[days] += Into::<BigUint>::into(1 as u64);
+        num_fish_each_day_until_spawn[days] += Into::<BigUint>::into(1u64);
     }
     for _ in 0..num_days {
         let num_spawning = num_fish_each_day_until_spawn.pop_front().unwrap();
