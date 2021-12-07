@@ -190,6 +190,9 @@ fn part_1(input: &str) -> Result<usize> {
 
 #[test]
 fn test_part_1() {
+    if cfg!(debug_assertions) {
+        return; // skip test in debug mode, it's slow when it's unoptimized
+    }
     let input = "
 0,9 -> 5,9
 8,0 -> 0,8
@@ -240,6 +243,9 @@ fn part_2(input: &str) -> Result<usize> {
 
 #[test]
 fn test_part_2() {
+    if cfg!(debug_assertions) {
+        return; // skip test in debug mode, it's slow when it's unoptimized
+    }
     let input = "
 0,9 -> 5,9
 8,0 -> 0,8
