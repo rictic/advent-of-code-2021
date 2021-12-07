@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 
-fn part_1(input: &str, num_days: usize) -> Result<u64> {
+fn count_lanternfish(input: &str, num_days: usize) -> Result<u64> {
     let mut num_fish_each_day_until_spawn = [0 as u64; 9];
     for days in input.split(',') {
         let days = days.parse::<usize>().context("parsing input number")?;
@@ -27,18 +27,21 @@ fn part_1(input: &str, num_days: usize) -> Result<u64> {
 
 #[test]
 fn test_part_1() {
-    assert_eq!(part_1("3,4,3,1,2", 1).unwrap(), 5);
-    assert_eq!(part_1("3,4,3,1,2", 2).unwrap(), 6);
-    assert_eq!(part_1("3,4,3,1,2", 18).unwrap(), 26);
-    assert_eq!(part_1("3,4,3,1,2", 80).unwrap(), 5_934);
-    assert_eq!(part_1(include_str!("./day6.txt"), 80).unwrap(), 380_243);
+    assert_eq!(count_lanternfish("3,4,3,1,2", 1).unwrap(), 5);
+    assert_eq!(count_lanternfish("3,4,3,1,2", 2).unwrap(), 6);
+    assert_eq!(count_lanternfish("3,4,3,1,2", 18).unwrap(), 26);
+    assert_eq!(count_lanternfish("3,4,3,1,2", 80).unwrap(), 5_934);
+    assert_eq!(
+        count_lanternfish(include_str!("./day6.txt"), 80).unwrap(),
+        380_243
+    );
 }
 
 #[test]
 fn test_part_2() {
-    assert_eq!(part_1("3,4,3,1,2", 256).unwrap(), 26_984_457_539);
+    assert_eq!(count_lanternfish("3,4,3,1,2", 256).unwrap(), 26_984_457_539);
     assert_eq!(
-        part_1(include_str!("./day6.txt"), 256).unwrap(),
+        count_lanternfish(include_str!("./day6.txt"), 256).unwrap(),
         1_708_791_884_591
     );
 }
