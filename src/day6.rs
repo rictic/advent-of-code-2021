@@ -35,10 +35,13 @@ fn test_part_1() {
         count_lanternfish(include_str!("./day6.txt"), 80).unwrap(),
         380_243u64.into()
     );
-    let big = count_lanternfish("3,4,3,1,2", 9999999).unwrap().to_string();
-    assert_eq!(big.len(), 378346);
-    assert!(big.starts_with("4182599183"));
-    assert!(big.ends_with("6707352532"));
+    // takes like 130s to run...
+    // let big = count_lanternfish("3,4,3,1,2", 9_999_999)
+    //     .unwrap()
+    //     .to_string();
+    // assert_eq!(big.len(), 378_346);
+    // assert!(big.starts_with("4182599183"));
+    // assert!(big.ends_with("6707352532"));
 }
 
 #[test]
