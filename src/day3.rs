@@ -1,3 +1,5 @@
+use std::thread;
+
 use anyhow::{anyhow, Result};
 
 fn extract_counts(input: &Vec<String>) -> Result<(Vec<usize>, usize)> {
@@ -67,11 +69,39 @@ fn test_part1() {
 fn extract_oxygen_and_co2(input: &str) -> Result<(u64, u64)> {
     let mut o2_candidates: Vec<String> = input.lines().map(|l| String::from(l)).collect();
     let mut co2_candidates = o2_candidates.clone();
-    let mut pos: usize = 0;
-    while o2_candidates.len() > 1 {
-        let (counts, line_count) = extract_counts(&o2_candidates)?;
-        let majority_ones = match counts.get(pos) {
-            Some(&count) => count >= ((line_count as f64) / 2.0).ceil() as usize,
+
+    let o2_thread = thread::spawn(move || {
+        let mut pos: usize = 0;
+        while o2_candidates.len() > 1 {
+            let (counts, line_count) = extract_counts(&o2_candidates)?;
+            let majority_ones = match counts.get(pos) {
+                Some(&count) => count >= ((line_count as f64) / 2.0).ceil() as usize,
+                None => {
+                    return Err(anyhow!(
+                        "Ran out of diagnostics by the time we looked at bit {} of the oxygen line",
+                        pos
+                    ))
+                }
+            };
+            o2_candidates = o2_candidates
+                .into_iter()
+                .filter(|line| {
+                    let char = line.chars().nth(pos);
+                    if majority_ones {
+                        char == Some('1')
+                    } else {
+                        char == Some('0')
+                    }
+                })
+                .collect();
+            pos += 1;
+        }
+        let oxygen_rate = match o2_candidates.get(0) {
+            Some(line) => {
+                // parse line as a binary string into a number
+                u64::from_str_radix(line, 2)
+                    .map_err(|_| anyhow!("invalid binary number: {}", line))?
+            }
             None => {
                 return Err(anyhow!(
                     "Ran out of diagnostics by the time we looked at bit {} of the oxygen line",
@@ -79,71 +109,60 @@ fn extract_oxygen_and_co2(input: &str) -> Result<(u64, u64)> {
                 ))
             }
         };
-        o2_candidates = o2_candidates
-            .into_iter()
-            .filter(|line| {
-                let char = line.chars().nth(pos);
-                if majority_ones {
-                    char == Some('1')
-                } else {
-                    char == Some('0')
+        Ok(oxygen_rate)
+    });
+
+    let co2_thread = thread::spawn(move || {
+        let mut pos: usize = 0;
+        while co2_candidates.len() > 1 {
+            let (counts, line_count) = extract_counts(&co2_candidates)?;
+            let majority_zeros = match counts.get(pos) {
+                Some(&count) => count >= ((line_count as f64) / 2.0).ceil() as usize,
+                None => {
+                    return Err(anyhow!(
+                        "Ran out of diagnostics by the time we looked at bit {} of co2 scrubbers",
+                        pos
+                    ))
                 }
-            })
-            .collect();
-        pos += 1;
-    }
-    let mut pos: usize = 0;
-    while co2_candidates.len() > 1 {
-        let (counts, line_count) = extract_counts(&co2_candidates)?;
-        let majority_zeros = match counts.get(pos) {
-            Some(&count) => count >= ((line_count as f64) / 2.0).ceil() as usize,
+            };
+            co2_candidates = co2_candidates
+                .into_iter()
+                .filter(|line| {
+                    let char = line.chars().nth(pos);
+                    if majority_zeros {
+                        char == Some('0')
+                    } else {
+                        char == Some('1')
+                    }
+                })
+                .collect();
+            pos += 1;
+        }
+        let co2_rate = match co2_candidates.get(0) {
+            Some(line) => {
+                // parse line as a binary string into a number
+                u64::from_str_radix(line, 2)
+                    .map_err(|_| anyhow!("invalid binary number: {}", line))?
+            }
             None => {
                 return Err(anyhow!(
-                    "Ran out of diagnostics by the time we looked at bit {} of co2 scrubbers",
+                    "Ran out of diagnostics by the time we looked at bit {} of c02 scrubbers",
                     pos
                 ))
             }
         };
-        co2_candidates = co2_candidates
-            .into_iter()
-            .filter(|line| {
-                let char = line.chars().nth(pos);
-                if majority_zeros {
-                    char == Some('0')
-                } else {
-                    char == Some('1')
-                }
-            })
-            .collect();
-        pos += 1;
-    }
-    let oxygen_rate = match o2_candidates.get(0) {
-        Some(line) => {
-            // parse line as a binary string into a number
-            u64::from_str_radix(line, 2).map_err(|_| anyhow!("invalid binary number: {}", line))?
-        }
-        None => {
-            return Err(anyhow!(
-                "Ran out of diagnostics by the time we looked at bit {} of the oxygen line",
-                pos
-            ))
-        }
-    };
-    let co2_rate = match co2_candidates.get(0) {
-        Some(line) => {
-            // parse line as a binary string into a number
-            u64::from_str_radix(line, 2).map_err(|_| anyhow!("invalid binary number: {}", line))?
-        }
-        None => {
-            return Err(anyhow!(
-                "Ran out of diagnostics by the time we looked at bit {} of c02 scrubbers",
-                pos
-            ))
-        }
-    };
+        Ok(co2_rate)
+    });
 
     // for each bit, if the count at that bit is > half of the number of lines, then it's a 1
-    Ok((oxygen_rate, co2_rate))
+    Ok((
+        o2_thread
+            .join()
+            .map_err(|e| anyhow!("Error in o2 thread: {:?}", e))??,
+        co2_thread
+            .join()
+            .map_err(|e| anyhow!("Error in co2 thread: {:?}", e))??,
+    ))
 }
 
 fn part_2(input: &str) -> Result<u64> {
