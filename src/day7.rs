@@ -50,6 +50,9 @@ fn part_2(input: &str) -> Result<i64> {
 
 #[test]
 fn test_part_2() {
+    if cfg!(debug_assertions) {
+        return; // skip test in debug mode, it's slow when it's unoptimized
+    }
     assert_eq!(part_2("16,1,2,0,4,2,7,1,2,14").unwrap(), 168);
     assert_eq!(part_2(include_str!("./day7.txt")).unwrap(), 95_851_339);
 }

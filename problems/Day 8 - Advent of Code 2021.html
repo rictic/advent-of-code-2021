@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)https://adventofcode.com/2021/day/8 -->
+<html lang="en-us"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Day 8 - Advent of Code 2021</title>
+<!--[if lt IE 9]><script src="/static/html5.js"></script><![endif]-->
+<link href="./Day 8 - Advent of Code 2021_files/css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="./Day 8 - Advent of Code 2021_files/style.css">
+<link rel="stylesheet alternate" type="text/css" href="./Day 8 - Advent of Code 2021_files/highcontrast.css" title="High Contrast">
+<link rel="shortcut icon" href="https://adventofcode.com/favicon.png">
+<script async="" src="./Day 8 - Advent of Code 2021_files/analytics.js"></script><script>(function(){class RuffleMimeType{constructor(a,b,c){this.type=a,this.description=b,this.suffixes=c}}class RuffleMimeTypeArray{constructor(a){this.__mimetypes=[],this.__named_mimetypes={};for(let b of a)this.install(b)}install(a){let b=this.__mimetypes.length;this.__mimetypes.push(a),this.__named_mimetypes[a.type]=a,this[a.type]=a,this[b]=a}item(a){return this.__mimetypes[a]}namedItem(a){return this.__named_mimetypes[a]}get length(){return this.__mimetypes.length}}class RufflePlugin extends RuffleMimeTypeArray{constructor(a,b,c,d){super(d),this.name=a,this.description=b,this.filename=c}install(a){a.enabledPlugin||(a.enabledPlugin=this),super.install(a)}}class RufflePluginArray{constructor(a){this.__plugins=[],this.__named_plugins={};for(let b of a)this.install(b)}install(a){let b=this.__plugins.length;this.__plugins.push(a),this.__named_plugins[a.name]=a,this[a.name]=a,this[b]=a}item(a){return this.__plugins[a]}namedItem(a){return this.__named_plugins[a]}get length(){return this.__plugins.length}}const FLASH_PLUGIN=new RufflePlugin("Shockwave Flash","Shockwave Flash 32.0 r0","ruffle.js",[new RuffleMimeType("application/futuresplash","Shockwave Flash","spl"),new RuffleMimeType("application/x-shockwave-flash","Shockwave Flash","swf"),new RuffleMimeType("application/x-shockwave-flash2-preview","Shockwave Flash","swf"),new RuffleMimeType("application/vnd.adobe.flash-movie","Shockwave Flash","swf")]);function install_plugin(a){navigator.plugins.install||Object.defineProperty(navigator,"plugins",{value:new RufflePluginArray(navigator.plugins),writable:!1}),navigator.plugins.install(a),0<a.length&&!navigator.mimeTypes.install&&Object.defineProperty(navigator,"mimeTypes",{value:new RuffleMimeTypeArray(navigator.mimeTypes),writable:!1});for(var b=0;b<a.length;b+=1)navigator.mimeTypes.install(a[b])}install_plugin(FLASH_PLUGIN);})();</script><script src="chrome-extension://donbcfbmhbcapadipfkeojnmajbakjdc/dist/ruffle.js?uniqueMessageSuffix=61518366708"></script></head><!--
+
+
+
+
+Oh, hello!  Funny seeing you here.
+
+I appreciate your enthusiasm, but you aren't going to find much down here.
+There certainly aren't clues to any of the puzzles.  The best surprises don't
+even appear in the source until you unlock them for real.
+
+Please be careful with automated requests; I'm not a massive company, and I can
+only take so much traffic.  Please be considerate so that everyone gets to play.
+
+If you're curious about how Advent of Code works, it's running on some custom
+Perl code. Other than a few integrations (auth, analytics, social media), I
+built the whole thing myself, including the design, animations, prose, and all
+of the puzzles.
+
+The puzzles are most of the work; preparing a new calendar and a new set of
+puzzles each year takes all of my free time for 4-5 months. A lot of effort
+went into building this thing - I hope you're enjoying playing it as much as I
+enjoyed making it for you!
+
+If you'd like to hang out, I'm @ericwastl on Twitter.
+
+- Eric Wastl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->
+<body>
+<header><div><h1 class="title-global"><a href="https://adventofcode.com/">Advent of Code</a></h1><nav><ul><li><a href="https://adventofcode.com/2021/about">[About]</a></li><li><a href="https://adventofcode.com/2021/events">[Events]</a></li><li><a href="https://teespring.com/stores/advent-of-code" target="_blank">[Shop]</a></li><li><a href="https://adventofcode.com/2021/settings">[Settings]</a></li><li><a href="https://adventofcode.com/2021/auth/logout">[Log Out]</a></li></ul></nav><div class="user">rictic <span class="star-count">14*</span></div></div><div><h1 class="title-event">&nbsp;&nbsp;&nbsp;<span class="title-event-wrap">0xffff&amp;</span><a href="https://adventofcode.com/2021">2021</a><span class="title-event-wrap"></span></h1><nav><ul><li><a href="https://adventofcode.com/2021">[Calendar]</a></li><li><a href="https://adventofcode.com/2021/support">[AoC++]</a></li><li><a href="https://adventofcode.com/2021/sponsors">[Sponsors]</a></li><li><a href="https://adventofcode.com/2021/leaderboard">[Leaderboard]</a></li><li><a href="https://adventofcode.com/2021/stats">[Stats]</a></li></ul></nav></div></header>
+
+<div id="sidebar">
+<div id="sponsor"><div class="quiet">Our <a href="https://adventofcode.com/2021/sponsors">sponsors</a> help make Advent of Code possible:</div><div class="sponsor"><a href="https://www.twilio.com/quest" target="_blank" onclick="if(ga)ga(&#39;send&#39;,&#39;event&#39;,&#39;sponsor&#39;,&#39;sidebar&#39;,this.href);" rel="noopener">TwilioQuest</a> - Learn to code and lead your intrepid crew on a mission to save The Cloud in TwilioQuest, a PC role-playing game inspired by classics of the 16-bit era. Free forever, and available now for Windows, Mac, and Linux.</div></div>
+</div><!--/sidebar-->
+
+<main>
+<script>window.addEventListener('click', function(e,s,r){if(e.target.nodeName==='CODE'&&e.detail===3){s=window.getSelection();s.removeAllRanges();r=document.createRange();r.selectNodeContents(e.target);s.addRange(r);}});</script>
+<article class="day-desc"><h2>--- Day 8: Seven Segment Search ---</h2><p>You barely reach the safety of the cave when the whale smashes into the cave mouth, collapsing it. Sensors indicate another exit to this cave at a much greater depth, so you have no choice but to press on.</p>
+<p>As your submarine slowly makes its way through the cave system, you notice that the four-digit <a href="https://en.wikipedia.org/wiki/Seven-segment_display" target="_blank">seven-segment displays</a> in your submarine are malfunctioning; <span title="Yes, just the four-digit seven-segment ones. Whole batch must have been faulty.">they must have been damaged</span> during the escape. You'll be in a lot of trouble without them, so you'd better figure out what's wrong.</p>
+<p>Each digit of a seven-segment display is rendered by turning on or off any of seven segments named <code>a</code> through <code>g</code>:</p>
+<pre><code>  0:      1:      2:      3:      4:
+ <em>aaaa</em>    ....    <em>aaaa    aaaa</em>    ....
+<em>b    c</em>  .    <em>c</em>  .    <em>c</em>  .    <em>c  b    c</em>
+<em>b    c</em>  .    <em>c</em>  .    <em>c</em>  .    <em>c  b    c</em>
+ ....    ....    <em>dddd    dddd    dddd</em>
+<em>e    f</em>  .    <em>f  e</em>    .  .    <em>f</em>  .    <em>f</em>
+<em>e    f</em>  .    <em>f  e</em>    .  .    <em>f</em>  .    <em>f</em>
+ <em>gggg</em>    ....    <em>gggg    gggg</em>    ....
+
+  5:      6:      7:      8:      9:
+ <em>aaaa    aaaa    aaaa    aaaa    aaaa</em>
+<em>b</em>    .  <em>b</em>    .  .    <em>c  b    c  b    c</em>
+<em>b</em>    .  <em>b</em>    .  .    <em>c  b    c  b    c</em>
+ <em>dddd    dddd</em>    ....    <em>dddd    dddd</em>
+.    <em>f  e    f</em>  .    <em>f  e    f</em>  .    <em>f</em>
+.    <em>f  e    f</em>  .    <em>f  e    f</em>  .    <em>f</em>
+ <em>gggg    gggg</em>    ....    <em>gggg    gggg</em>
+</code></pre>
+<p>So, to render a <code>1</code>, only segments <code>c</code> and <code>f</code> would be turned on; the rest would be off. To render a <code>7</code>, only segments <code>a</code>, <code>c</code>, and <code>f</code> would be turned on.</p>
+<p>The problem is that the signals which control the segments have been mixed up on each display. The submarine is still trying to display numbers by producing output on signal wires <code>a</code> through <code>g</code>, but those wires are connected to segments <em>randomly</em>. Worse, the wire/segment connections are mixed up separately for each four-digit display! (All of the digits <em>within</em> a display use the same connections, though.)</p>
+<p>So, you might know that only signal wires <code>b</code> and <code>g</code> are turned on, but that doesn't mean <em>segments</em> <code>b</code> and <code>g</code> are turned on: the only digit that uses two segments is <code>1</code>, so it must mean segments <code>c</code> and <code>f</code> are meant to be on. With just that information, you still can't tell which wire (<code>b</code>/<code>g</code>) goes to which segment (<code>c</code>/<code>f</code>). For that, you'll need to collect more information.</p>
+<p>For each display, you watch the changing signals for a while, make a note of <em>all ten unique signal patterns</em> you see, and then write down a single <em>four digit output value</em> (your puzzle input). Using the signal patterns, you should be able to work out which pattern corresponds to which digit.</p>
+<p>For example, here is what you might see in a single entry in your notes:</p>
+<pre><code>acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab |
+cdfeb fcadb cdfeb cdbaf</code></pre>
+<p>(The entry is wrapped here to two lines so it fits; in your notes, it will all be on a single line.)</p>
+<p>Each entry consists of ten <em>unique signal patterns</em>, a <code>|</code> delimiter, and finally the <em>four digit output value</em>. Within an entry, the same wire/segment connections are used (but you don't know what the connections actually are). The unique signal patterns correspond to the ten different ways the submarine tries to render a digit using the current wire/segment connections. Because <code>7</code> is the only digit that uses three segments, <code>dab</code> in the above example means that to render a <code>7</code>, signal lines <code>d</code>, <code>a</code>, and <code>b</code> are on. Because <code>4</code> is the only digit that uses four segments, <code>eafb</code> means that to render a <code>4</code>, signal lines <code>e</code>, <code>a</code>, <code>f</code>, and <code>b</code> are on.</p>
+<p>Using this information, you should be able to work out which combination of signal wires corresponds to each of the ten digits. Then, you can decode the four digit output value. Unfortunately, in the above example, all of the digits in the output value (<code>cdfeb fcadb cdfeb cdbaf</code>) use five segments and are more difficult to deduce.</p>
+<p>For now, <em>focus on the easy digits</em>. Consider this larger example:</p>
+<pre><code>be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb |
+<em>fdgacbe</em> cefdb cefbgd <em>gcbe</em>
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec |
+fcgedb <em>cgb</em> <em>dgebacf</em> <em>gc</em>
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef |
+<em>cg</em> <em>cg</em> fdcagb <em>cbg</em>
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega |
+efabcd cedba gadfec <em>cb</em>
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga |
+<em>gecf</em> <em>egdcabf</em> <em>bgf</em> bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf |
+<em>gebdcfa</em> <em>ecba</em> <em>ca</em> <em>fadegcb</em>
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf |
+<em>cefg</em> dcbef <em>fcge</em> <em>gbcadfe</em>
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd |
+<em>ed</em> bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg |
+<em>gbdfcae</em> <em>bgc</em> <em>cg</em> <em>cgb</em>
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc |
+<em>fgae</em> cfgab <em>fg</em> bagce
+</code></pre>
+<p>Because the digits <code>1</code>, <code>4</code>, <code>7</code>, and <code>8</code> each use a unique number of segments, you should be able to tell which combinations of signals correspond to those digits. Counting <em>only digits in the output values</em> (the part after <code>|</code> on each line), in the above example, there are <code><em>26</em></code> instances of digits that use a unique number of segments (highlighted above).</p>
+<p><em>In the output values, how many times do digits <code>1</code>, <code>4</code>, <code>7</code>, or <code>8</code> appear?</em></p>
+</article>
+<p>To begin, <a href="https://adventofcode.com/2021/day/8/input" target="_blank">get your puzzle input</a>.</p>
+<form method="post" action="https://adventofcode.com/2021/day/8/answer"><input type="hidden" name="level" value="1"><p>Answer: <input type="text" name="answer" autocomplete="off"> <input type="submit" value="[Submit]"></p></form>
+<p>You can also <span class="share">[Share<span class="share-content">on
+  <a href="https://twitter.com/intent/tweet?text=%22Seven+Segment+Search%22+%2D+Day+8+%2D+Advent+of+Code+2021&amp;url=https%3A%2F%2Fadventofcode%2Ecom%2F2021%2Fday%2F8&amp;related=ericwastl&amp;hashtags=AdventOfCode" target="_blank">Twitter</a>
+  <a href="javascript:void(0);" onclick="var mastodon_instance=prompt(&#39;Mastodon Instance / Server Name?&#39;); if(typeof mastodon_instance===&#39;string&#39; &amp;&amp; mastodon_instance.length){this.href=&#39;https://&#39;+mastodon_instance+&#39;/share?text=%22Seven+Segment+Search%22+%2D+Day+8+%2D+Advent+of+Code+2021+%23AdventOfCode+https%3A%2F%2Fadventofcode%2Ecom%2F2021%2Fday%2F8&#39;}else{return false;}" target="_blank">Mastodon</a></span>]</span> this puzzle.</p>
+</main>
+
+<!-- ga -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-69522494-1', 'auto');
+ga('set', 'anonymizeIp', true);
+ga('send', 'pageview');
+</script>
+<!-- /ga -->
+
+</body></html>

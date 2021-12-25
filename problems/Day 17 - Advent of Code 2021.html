@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)https://adventofcode.com/2021/day/17 -->
+<html lang="en-us"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Day 17 - Advent of Code 2021</title>
+<!--[if lt IE 9]><script src="/static/html5.js"></script><![endif]-->
+<link href="./Day 17 - Advent of Code 2021_files/css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="./Day 17 - Advent of Code 2021_files/style.css">
+<link rel="stylesheet alternate" type="text/css" href="./Day 17 - Advent of Code 2021_files/highcontrast.css" title="High Contrast">
+<link rel="shortcut icon" href="https://adventofcode.com/favicon.png">
+<script async="" src="./Day 17 - Advent of Code 2021_files/analytics.js"></script><script>(function(){class RuffleMimeType{constructor(a,b,c){this.type=a,this.description=b,this.suffixes=c}}class RuffleMimeTypeArray{constructor(a){this.__mimetypes=[],this.__named_mimetypes={};for(let b of a)this.install(b)}install(a){let b=this.__mimetypes.length;this.__mimetypes.push(a),this.__named_mimetypes[a.type]=a,this[a.type]=a,this[b]=a}item(a){return this.__mimetypes[a]}namedItem(a){return this.__named_mimetypes[a]}get length(){return this.__mimetypes.length}}class RufflePlugin extends RuffleMimeTypeArray{constructor(a,b,c,d){super(d),this.name=a,this.description=b,this.filename=c}install(a){a.enabledPlugin||(a.enabledPlugin=this),super.install(a)}}class RufflePluginArray{constructor(a){this.__plugins=[],this.__named_plugins={};for(let b of a)this.install(b)}install(a){let b=this.__plugins.length;this.__plugins.push(a),this.__named_plugins[a.name]=a,this[a.name]=a,this[b]=a}item(a){return this.__plugins[a]}namedItem(a){return this.__named_plugins[a]}get length(){return this.__plugins.length}}const FLASH_PLUGIN=new RufflePlugin("Shockwave Flash","Shockwave Flash 32.0 r0","ruffle.js",[new RuffleMimeType("application/futuresplash","Shockwave Flash","spl"),new RuffleMimeType("application/x-shockwave-flash","Shockwave Flash","swf"),new RuffleMimeType("application/x-shockwave-flash2-preview","Shockwave Flash","swf"),new RuffleMimeType("application/vnd.adobe.flash-movie","Shockwave Flash","swf")]);function install_plugin(a){navigator.plugins.install||Object.defineProperty(navigator,"plugins",{value:new RufflePluginArray(navigator.plugins),writable:!1}),navigator.plugins.install(a),0<a.length&&!navigator.mimeTypes.install&&Object.defineProperty(navigator,"mimeTypes",{value:new RuffleMimeTypeArray(navigator.mimeTypes),writable:!1});for(var b=0;b<a.length;b+=1)navigator.mimeTypes.install(a[b])}install_plugin(FLASH_PLUGIN);})();</script><script src="chrome-extension://donbcfbmhbcapadipfkeojnmajbakjdc/dist/ruffle.js?uniqueMessageSuffix=37342965818"></script></head><!--
+
+
+
+
+Oh, hello!  Funny seeing you here.
+
+I appreciate your enthusiasm, but you aren't going to find much down here.
+There certainly aren't clues to any of the puzzles.  The best surprises don't
+even appear in the source until you unlock them for real.
+
+Please be careful with automated requests; I'm not a massive company, and I can
+only take so much traffic.  Please be considerate so that everyone gets to play.
+
+If you're curious about how Advent of Code works, it's running on some custom
+Perl code. Other than a few integrations (auth, analytics, social media), I
+built the whole thing myself, including the design, animations, prose, and all
+of the puzzles.
+
+The puzzles are most of the work; preparing a new calendar and a new set of
+puzzles each year takes all of my free time for 4-5 months. A lot of effort
+went into building this thing - I hope you're enjoying playing it as much as I
+enjoyed making it for you!
+
+If you'd like to hang out, I'm @ericwastl on Twitter.
+
+- Eric Wastl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-->
+<body>
+<header><div><h1 class="title-global"><a href="https://adventofcode.com/">Advent of Code</a></h1><nav><ul><li><a href="https://adventofcode.com/2021/about">[About]</a></li><li><a href="https://adventofcode.com/2021/events">[Events]</a></li><li><a href="https://teespring.com/stores/advent-of-code" target="_blank">[Shop]</a></li><li><a href="https://adventofcode.com/2021/settings">[Settings]</a></li><li><a href="https://adventofcode.com/2021/auth/logout">[Log Out]</a></li></ul></nav><div class="user">rictic <span class="star-count">14*</span></div></div><div><h1 class="title-event">&nbsp;&nbsp;&nbsp;<span class="title-event-wrap">0x0000|</span><a href="https://adventofcode.com/2021">2021</a><span class="title-event-wrap"></span></h1><nav><ul><li><a href="https://adventofcode.com/2021">[Calendar]</a></li><li><a href="https://adventofcode.com/2021/support">[AoC++]</a></li><li><a href="https://adventofcode.com/2021/sponsors">[Sponsors]</a></li><li><a href="https://adventofcode.com/2021/leaderboard">[Leaderboard]</a></li><li><a href="https://adventofcode.com/2021/stats">[Stats]</a></li></ul></nav></div></header>
+
+<div id="sidebar">
+<div id="sponsor"><div class="quiet">Our <a href="https://adventofcode.com/2021/sponsors">sponsors</a> help make Advent of Code possible:</div><div class="sponsor"><a href="https://shopify.engineering/?utm_campaign=advent_of_code&amp;utm_medium=cpc" target="_blank" onclick="if(ga)ga(&#39;send&#39;,&#39;event&#39;,&#39;sponsor&#39;,&#39;sidebar&#39;,this.href);" rel="noopener">Shopify</a> - Check out our engineering blog and learn how Yule be able to solve commerce problems at scale by joining Shopify. Happy Holidays!</div></div>
+</div><!--/sidebar-->
+
+<main>
+<script>window.addEventListener('click', function(e,s,r){if(e.target.nodeName==='CODE'&&e.detail===3){s=window.getSelection();s.removeAllRanges();r=document.createRange();r.selectNodeContents(e.target);s.addRange(r);}});</script>
+<article class="day-desc"><h2>--- Day 17: Trick Shot ---</h2><p>You finally decode the Elves' message. <code><span title="Maybe you need to turn the message 90 degrees counterclockwise?">HI</span></code>, the message says. You continue searching for the sleigh keys.</p>
+<p>Ahead of you is what appears to be a large <a href="https://en.wikipedia.org/wiki/Oceanic_trench" target="_blank">ocean trench</a>. Could the keys have fallen into it? You'd better send a probe to investigate.</p>
+<p>The probe launcher on your submarine can fire the probe with any <a href="https://en.wikipedia.org/wiki/Integer" target="_blank">integer</a> velocity in the <code>x</code> (forward) and <code>y</code> (upward, or downward if negative) directions. For example, an initial <code>x,y</code> velocity like <code>0,10</code> would fire the probe straight up, while an initial velocity like <code>10,-1</code> would fire the probe forward at a slight downward angle.</p>
+<p>The probe's <code>x,y</code> position starts at <code>0,0</code>. Then, it will follow some trajectory by moving in <em>steps</em>. On each step, these changes occur in the following order:</p>
+<ul>
+<li>The probe's <code>x</code> position increases by its <code>x</code> velocity.</li>
+<li>The probe's <code>y</code> position increases by its <code>y</code> velocity.</li>
+<li>Due to drag, the probe's <code>x</code> velocity changes by <code>1</code> toward the value <code>0</code>; that is, it decreases by <code>1</code> if it is greater than <code>0</code>, increases by <code>1</code> if it is less than <code>0</code>, or does not change if it is already <code>0</code>.</li>
+<li>Due to gravity, the probe's <code>y</code> velocity decreases by <code>1</code>.</li>
+</ul>
+<p>For the probe to successfully make it into the trench, the probe must be on some trajectory that causes it to be within a <em>target area</em> after any step. The submarine computer has already calculated this target area (your puzzle input). For example:</p>
+<pre><code>target area: x=20..30, y=-10..-5</code></pre>
+<p>This target area means that you need to find initial <code>x,y</code> velocity values such that after any step, the probe's <code>x</code> position is at least <code>20</code> and at most <code>30</code>, <em>and</em> the probe's <code>y</code> position is at least <code>-10</code> and at most <code>-5</code>.</p>
+<p>Given this target area, one initial velocity that causes the probe to be within the target area after any step is <code>7,2</code>:</p>
+<pre><code>.............#....#............
+.......#..............#........
+...............................
+S........................#.....
+...............................
+...............................
+...........................#...
+...............................
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTT#TT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+</code></pre>
+<p>In this diagram, <code>S</code> is the probe's initial position, <code>0,0</code>. The <code>x</code> coordinate increases to the right, and the <code>y</code> coordinate increases upward. In the bottom right, positions that are within the target area are shown as <code>T</code>. After each step (until the target area is reached), the position of the probe is marked with <code>#</code>. (The bottom-right <code>#</code> is both a position the probe reaches and a position in the target area.)</p>
+<p>Another initial velocity that causes the probe to be within the target area after any step is <code>6,3</code>:</p>
+<pre><code>...............#..#............
+...........#........#..........
+...............................
+......#..............#.........
+...............................
+...............................
+S....................#.........
+...............................
+...............................
+...............................
+.....................#.........
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................T#TTTTTTTTT
+....................TTTTTTTTTTT
+</code></pre>
+<p>Another one is <code>9,0</code>:</p>
+<pre><code>S........#.....................
+.................#.............
+...............................
+........................#......
+...............................
+....................TTTTTTTTTTT
+....................TTTTTTTTTT#
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+....................TTTTTTTTTTT
+</code></pre>
+<p>One initial velocity that <em>doesn't</em> cause the probe to be within the target area after any step is <code>17,-4</code>:</p>
+<pre><code>S..............................................................
+...............................................................
+...............................................................
+...............................................................
+.................#.............................................
+....................TTTTTTTTTTT................................
+....................TTTTTTTTTTT................................
+....................TTTTTTTTTTT................................
+....................TTTTTTTTTTT................................
+....................TTTTTTTTTTT..#.............................
+....................TTTTTTTTTTT................................
+...............................................................
+...............................................................
+...............................................................
+...............................................................
+................................................#..............
+...............................................................
+...............................................................
+...............................................................
+...............................................................
+...............................................................
+...............................................................
+..............................................................#
+</code></pre>
+<p>The probe appears to pass through the target area, but is never within it after any step. Instead, it continues down and to the right - only the first few steps are shown.</p>
+<p>If you're going to fire a highly scientific probe out of a super cool probe launcher, you might as well do it with <em>style</em>. How high can you make the probe go while still reaching the target area?</p>
+<p>In the above example, using an initial velocity of <code>6,9</code> is the best you can do, causing the probe to reach a maximum <code>y</code> position of <code><em>45</em></code>. (Any higher initial <code>y</code> velocity causes the probe to overshoot the target area entirely.)</p>
+<p>Find the initial velocity that causes the probe to reach the highest <code>y</code> position and still eventually be within the target area after any step. <em>What is the highest <code>y</code> position it reaches on this trajectory?</em></p>
+</article>
+<p>To begin, <a href="https://adventofcode.com/2021/day/17/input" target="_blank">get your puzzle input</a>.</p>
+<form method="post" action="https://adventofcode.com/2021/day/17/answer"><input type="hidden" name="level" value="1"><p>Answer: <input type="text" name="answer" autocomplete="off"> <input type="submit" value="[Submit]"></p></form>
+<p>You can also <span class="share">[Share<span class="share-content">on
+  <a href="https://twitter.com/intent/tweet?text=%22Trick+Shot%22+%2D+Day+17+%2D+Advent+of+Code+2021&amp;url=https%3A%2F%2Fadventofcode%2Ecom%2F2021%2Fday%2F17&amp;related=ericwastl&amp;hashtags=AdventOfCode" target="_blank">Twitter</a>
+  <a href="javascript:void(0);" onclick="var mastodon_instance=prompt(&#39;Mastodon Instance / Server Name?&#39;); if(typeof mastodon_instance===&#39;string&#39; &amp;&amp; mastodon_instance.length){this.href=&#39;https://&#39;+mastodon_instance+&#39;/share?text=%22Trick+Shot%22+%2D+Day+17+%2D+Advent+of+Code+2021+%23AdventOfCode+https%3A%2F%2Fadventofcode%2Ecom%2F2021%2Fday%2F17&#39;}else{return false;}" target="_blank">Mastodon</a></span>]</span> this puzzle.</p>
+</main>
+
+<!-- ga -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-69522494-1', 'auto');
+ga('set', 'anonymizeIp', true);
+ga('send', 'pageview');
+</script>
+<!-- /ga -->
+
+</body></html>
