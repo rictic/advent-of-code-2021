@@ -155,10 +155,10 @@ impl Problem {
     }
 
     fn analyze_signals(line: &str) -> Result<()> {
-        let (wire_patterns, message) = line
+        let (wire_patterns, _message) = line
             .split_once(" | ")
             .ok_or_else(|| anyhow!("Line missing | character: {:?}", line))?;
-        let mut problem = Self::initial();
+        let mut _problem = Self::initial();
         let wire_patterns = wire_patterns
             .split(" ")
             .map(|wire_pattern| {
