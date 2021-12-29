@@ -88,11 +88,78 @@ impl Graph {
         }
         count
     }
+
+    fn count_complicated_paths(&self) -> Result<u64> {
+        Ok(self.count_complicated_paths_from_to(
+            *self.names.get("start").ok_or(anyhow::anyhow!("No start"))?,
+            *self.names.get("end").ok_or(anyhow::anyhow!("No end"))?,
+            &mut Default::default(),
+            &mut Default::default(),
+            &mut None,
+        ))
+    }
+
+    fn count_complicated_paths_from_to(
+        &self,
+        from: usize,
+        to: usize,
+        small_visited: &mut BTreeSet<usize>,
+        path: &mut Vec<usize>,
+        twice_visited: &mut Option<usize>,
+    ) -> u64 {
+        if path.len() > 1 && from == path[0] {
+            return 0; // returning to start is not alowed
+        }
+        let mut count = 0;
+        let is_small = self.edges[from].0 == Size::Small;
+        if is_small {
+            if small_visited.contains(&from) {
+                match twice_visited {
+                    Some(_) => {
+                        return 0;
+                    }
+                    None => {
+                        *twice_visited = Some(from);
+                    }
+                }
+            } else {
+                small_visited.insert(from);
+            }
+        }
+        path.push(from);
+        for &neighbor in &self.edges[from].1 {
+            if neighbor == to {
+                count += 1;
+            } else {
+                count += self.count_complicated_paths_from_to(
+                    neighbor,
+                    to,
+                    small_visited,
+                    path,
+                    twice_visited,
+                );
+            }
+        }
+        path.pop();
+        if is_small {
+            if *twice_visited == Some(from) {
+                *twice_visited = None;
+            } else {
+                small_visited.remove(&from);
+            }
+        }
+        count
+    }
 }
 
 fn part_1(input: &str) -> Result<u64> {
     let graph = input.parse::<Graph>()?;
     graph.count_paths()
+}
+
+fn part_2(input: &str) -> Result<u64> {
+    let graph = input.parse::<Graph>()?;
+    graph.count_complicated_paths()
 }
 
 #[test]
@@ -112,4 +179,23 @@ b-end"
         10
     );
     assert_eq!(part_1(include_str!("day12.txt")).unwrap(), 4749);
+}
+
+#[test]
+fn test_part_2() {
+    assert_eq!(
+        part_2(
+            "
+start-A
+start-b
+A-c
+A-b
+b-d
+A-end
+b-end"
+        )
+        .unwrap(),
+        36
+    );
+    assert_eq!(part_2(include_str!("day12.txt")).unwrap(), 123054);
 }
