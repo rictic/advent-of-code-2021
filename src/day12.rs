@@ -197,5 +197,8 @@ b-end"
         .unwrap(),
         36
     );
+    if cfg!(debug_assertions) {
+        return; // skip test in debug mode, it's slow when it's unoptimized
+    }
     assert_eq!(part_2(include_str!("day12.txt")).unwrap(), 123054);
 }
